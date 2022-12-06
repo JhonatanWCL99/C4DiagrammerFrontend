@@ -4,7 +4,7 @@ import PersonStatic from '../c4/Persons/PersonStatic';
 import PersonDynamic from '../c4/Persons/PersonDynamic';
 import SystemStatic from '../c4/Systems/SystemStatic';
 import ContainerStatic from '../c4/Containers/ContainerStatic';
-import DataBaseStatic from '../c4/DataBases/DataBaseStatic';
+import DataBaseStatic from '../c4/Databases/DataBaseStatic';
 import { Arrow } from 'react-konva';
 import SystemDynamic from '../c4/Systems/SystemDynamic';
 import ContainerDynamic from '../c4/Containers/ContainerDynamic';
