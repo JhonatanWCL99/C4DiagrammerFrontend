@@ -4,7 +4,7 @@ import Loading from '../../components/elements/Loading';
 import Table from '../../components/elements/Table';
 import { AuthContext } from '../../context/AuthContext';
 import { SocketContext } from '../../context/SocketContext';
-import roomService from '../../services/roomService';
+import roomService from '../../services/RoomService';
 
 function Room() {
 
