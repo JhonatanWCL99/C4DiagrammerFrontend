@@ -1,4 +1,3 @@
-// const baseUrl = "http://localhost:4000/api/auth";
 const baseUrl = "https://c4diagrammerbackend.up.railway.app/api/auth";
 
 export const fetchSinToken = async( endpoint, data, method = 'GET' ) => {
