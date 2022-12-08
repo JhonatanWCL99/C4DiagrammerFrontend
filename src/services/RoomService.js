@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:4000/api/room";
+const API_URL = "https://c4diagrammerbackend.up.railway.app/api/room";
+//const API_URL = "http://localhost:4000/api/room";
 
 class RoomService {
     allRoomsAnfitrion(idAnfitrion) {
