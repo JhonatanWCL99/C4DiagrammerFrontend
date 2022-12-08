@@ -6,7 +6,7 @@ export const SocketContext = createContext(null);
 
 export const SocketProvider = ({ children }) => {
 
-    const { socket, online, conectarSocket, desconectarSocket } = useSocket("http://localhost:4000");
+    const { socket, online, conectarSocket, desconectarSocket } = useSocket("https://c4diagrammerbackend.up.railway.app");
     const { auth } = useContext(AuthContext);
 
     useEffect(() => {
