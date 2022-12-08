@@ -11,6 +11,7 @@ export default function System(props) {
                 draggable
                 ref={systemRef}
                 key={props.myKey}
+                name={props.myKey}
                 x={props.x}
                 y={props.y}
                 onDragEnd={event => {
@@ -28,6 +29,7 @@ export default function System(props) {
                 <Rect
                     x={0}
                     y={50}
+                    name={props.myKey}
                     width={props.width}
                     height={props.height}
                     fill={props.fill}
@@ -36,6 +38,7 @@ export default function System(props) {
                 <Text
                     x={5}
                     y={62}
+                    name={props.myKey}
                     fill='white'
                     fontFamily='Calibri'
                     fontSize={15}
@@ -48,6 +51,7 @@ export default function System(props) {
                 <Text
                     x={5}
                     y={82}
+                    name={props.myKey}
                     fill='white'
                     fontFamily='Calibri'
                     fontSize={10}
@@ -59,6 +63,7 @@ export default function System(props) {
                 <Text
                     x={5}
                     y={100}
+                    name={props.myKey}
                     fill='white'
                     fontFamily='Calibri'
                     fontSize={24 - 15}

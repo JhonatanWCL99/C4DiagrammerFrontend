@@ -11,11 +11,14 @@ function DataBase(props) {
                 draggable
                 ref={databaseRef}
                 key={props.myKey}
+                name={props.myKey}
                 x={props.x}
                 y={props.y}
                 onDragEnd={event => {
                     let e = event;
                     let send = {
+                        name: props.name,
+                        ref: databaseRef.current,
                         x: e.target.x(),
                         y: e.target.y(),
                     }
@@ -25,6 +28,7 @@ function DataBase(props) {
                 <Rect
                     x={0}
                     y={50}
+                    name={props.myKey}
                     width={props.width}
                     height={props.height}
                     fill='#00a8ff'
@@ -33,6 +37,7 @@ function DataBase(props) {
                 <Ellipse
                     x={120 / 2}
                     y={58}
+                    name={props.myKey}
                     radiusX={59}
                     radiusY={10}
                     fill='#00a8ff'
@@ -42,6 +47,7 @@ function DataBase(props) {
                 <Text
                     x={5}
                     y={74}
+                    name={props.myKey}
                     fill='white'
                     fontFamily='Calibri'
                     fontSize={15}
@@ -53,6 +59,7 @@ function DataBase(props) {
                 <Text
                     x={5}
                     y={92}
+                    name={props.myKey}
                     fill='white'
                     fontFamily='Calibri'
                     fontSize={10}
@@ -64,6 +71,7 @@ function DataBase(props) {
                 <Text
                     x={5}
                     y={108}
+                    name={props.myKey}
                     fill='white'
                     fontFamily='Calibri'
                     fontSize={24 - 15}

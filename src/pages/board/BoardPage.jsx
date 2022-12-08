@@ -14,7 +14,16 @@ export default function BoardPage() {
     const { socket } = useContext(SocketContext)
     const [usersEspera, setUsersEspera] = useState([]);
     const [usersConectados, setUsersConectados] = useState([room.anfitrion]);
-
+   /*  const [arrows, setArrows] = useState([])
+    const [arrowCurrent, setArrowCurrent] = useState({
+        id: "",
+        label: "label",
+        start: "",
+        end: "",
+        typeStart: "",
+        typeEnd: ""
+    })
+    const [enableArrow, setEnableArrow] = useState(false); */
     useEffect(() => {
         socket.on('nuevo-participante', (args) => {
             setUsersEspera(prevArray => prevArray.indexOf(args) === -1 ? [...prevArray,
@@ -35,12 +44,56 @@ export default function BoardPage() {
         </>
     }
 
+   /*  function linkedArrow(idShape, typeShape) {
+        if (enableArrow) {
+            if (arrowCurrent.start === "") {
+                const arrowTemp = arrowCurrent;
+                setArrowCurrent({
+                    id: arrowTemp.id,
+                    label: arrowTemp.label,
+                    start: idShape,
+                    end: "",
+                    typeStart: typeShape,
+                    typeEnd: ""
+                });
+            } else {
+                if (arrowCurrent.start !== idShape) {
+                    const arrowTemp = arrowCurrent;
+                    const arro = {
+                        id: arrowTemp.id,
+                        label: arrowTemp.label,
+                        start: arrowTemp.start,
+                        end: idShape,
+                        typeStart: arrowTemp.typeStart,
+                        typeEnd: typeShape
+                    };
+                    setArrowCurrent(arro);
+                    setArrows([...arrows, arro])
+                    //DB.addArrow(arro, code.current);
+                    setEnableArrow(false);
+                    setArrowCurrent({
+                        id: "",
+                        label: "label",
+                        start: "",
+                        end: "",
+                        typeStart: "",
+                        typeEnd: ""
+                    });
+                }
+            }
+        }
+    } */
 
 
     return (
         <>
             <div className='flex'>
-                <MainStage />
+                <MainStage
+                    /* setArrowCurrent={setArrowCurrent}
+                    setEnableArrow={setEnableArrow}
+                    linkedArrow={linkedArrow}
+                    arrows={arrows} */
+                />
                 <div className='flex flex-col p-4'>
                     {usersConectados.length > 0 && usersConectados.map((userConectado) => (
                         <div key={userConectado.id.toString()}>
@@ -63,6 +116,13 @@ export default function BoardPage() {
                     />
                 ))}
             </div>
+           {/*  {arrows.map(arrow => (
+                <Arrow
+                    key={arrow.id}
+                    myKey={arrow.id}
+                    arrow={arrow}
+                />
+            ))} */}
         </>
     )
 }

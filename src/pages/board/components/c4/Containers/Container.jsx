@@ -11,12 +11,15 @@ function Container(props) {
                 draggable
                 ref={containerRef}
                 key={props.myKey}
+                name={props.myKey}
                 x={props.x}
                 y={props.y}
                 onDragEnd={event => {
                     let e = event;
 
                     let send = {
+                        name: props.name,
+                        ref: containerRef.current,
                         x: e.target.x(),
                         y: e.target.y(),
                     }
@@ -26,6 +29,7 @@ function Container(props) {
                 <Rect
                     x={0}
                     y={50}
+                    name={props.myKey}
                     width={props.width}
                     height={props.height}
                     fill={props.fill}
@@ -34,6 +38,7 @@ function Container(props) {
                 <Text
                     x={5}
                     y={62}
+                    name={props.myKey}
                     fill='white'
                     fontFamily='Calibri'
                     fontSize={15}
@@ -46,6 +51,7 @@ function Container(props) {
                 <Text
                     x={5}
                     y={82}
+                    name={props.myKey}
                     fill='white'
                     fontFamily='Calibri'
                     fontSize={10}
@@ -57,6 +63,7 @@ function Container(props) {
                 <Text
                     x={5}
                     y={100}
+                    name={props.myKey}
                     fill='white'
                     fontFamily='Calibri'
                     fontSize={24 - 15}

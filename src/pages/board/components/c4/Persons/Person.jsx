@@ -2,7 +2,6 @@ import React, { useRef } from 'react';
 import { Group, Rect, Circle, Text } from 'react-konva';
 
 
-
 export default function Person(props) {
 
     const personRef = useRef();
@@ -10,8 +9,10 @@ export default function Person(props) {
     return (
         <React.Fragment>
             <Group
+                /* onClick={props.onClick} */
                 draggable
                 ref={personRef}
+                name={props.name}
                 key={props.myKey}
                 x={props.x}
                 y={props.y}
@@ -24,20 +25,22 @@ export default function Person(props) {
                         name: props.name,
                         ref: personRef.current,
                     }
+                  /*   console.log(personRef.current) */
                     props.actualizarPerson(send)
 
                 }}
-
             >
                 <Circle
                     x={props.width / 2}
                     y={30}
+                    name={props.name}
                     radius={props.radius}
                     fill={props.fill}
                 />
                 <Rect
                     x={0}
                     y={50}
+                    name={props.name}
                     width={props.width}
                     height={props.height}
                     fill={props.fill}
@@ -46,6 +49,7 @@ export default function Person(props) {
                 <Text
                     x={5}
                     y={62}
+                    name={props.name}
                     fill='white'
                     fontFamily='Calibri'
                     fontSize={15}
@@ -57,6 +61,8 @@ export default function Person(props) {
                 <Text
                     x={5}
                     y={82}
+                    name={props.name}
+
                     fill='white'
                     fontFamily='Calibri'
                     fontSize={10}
@@ -68,6 +74,7 @@ export default function Person(props) {
                 <Text
                     x={5}
                     y={100}
+                    name={props.name}
                     fill='white'
                     fontFamily='Calibri'
                     fontSize={24 - 15}

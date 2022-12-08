@@ -1,18 +1,21 @@
-import React, { useState, useRef, useEffect } from 'react'
-import { Stage, Layer } from 'react-konva'
+import React, { useState, useRef, useEffect, useContext } from 'react'
+import { Stage, Layer, Rect, Arrow } from 'react-konva'
 import Container from './c4/Containers/Container';
 import DataBase from './c4/Databases/DataBase';
 import Person from './c4/Persons/Person'
 import System from './c4/Systems/System';
 import ToolBar from './toolbars/ToolBar'
 import roomService from '../../../services/RoomService';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
+import Connector from './c4/Arrows/Connector';
+import { AuthContext } from '../../../context/AuthContext';
 
-export default function MainStage() {
+export default function MainStage(props) {
     const scenarioStageRef = useRef();
     const layerRef1 = useRef();
     const layerRef2 = useRef();
-    const [selectedShapeName, setSelectedShapeName] = useState("")
+    /* const [selectedShapeName, setSelectedShapeName] = useState("") */
     const [persons, setPersons] = useState([])
     const [personDeleteCount, setPersonDeleteCount] = useState(0)
     const [systems, setSystems] = useState([])
@@ -21,10 +24,22 @@ export default function MainStage() {
     const [containerDeleteCount, setContainerDeleteCount] = useState(0)
     const [databases, setDatabases] = useState([])
     const [databaseDeleteCount, setDataBaseDeleteCount] = useState(0)
+    const [arrows, setArrows] = useState([])
+    const [arrowDeleteCount, setArrowDeleteCount] = useState(0)
+    const [newArrowDropped, setNewArrowDropped] = useState(false)
+    const [newArrowRef, setNewArrowRef] = useState(undefined)
+    const [arrowEndX, setArrowEndX] = useState(0)
+    const [arrowEndY, setArrowEndY] = useState(0)
     const location = useLocation();
+    const { room } = location.state;
+    const { auth } = useContext(AuthContext)
     const room_id = location.pathname.split("/")[2];
+    const [previousShape, setPreviousShape] = useState(undefined);
+    const [arrowDraggable, setArrowDraggable] = useState(false);
+    const Navigate = useNavigate();
 
     useEffect(() => {
+        console.log(room)
         loadShapes();
     }, [])
 
@@ -34,7 +49,7 @@ export default function MainStage() {
         setContainers(resp.containers)
         setDatabases(resp.databases)
         setSystems(resp.systems)
-        console.log(resp);
+        /* console.log(resp); */
     }
 
     async function handleSave() {
@@ -45,70 +60,103 @@ export default function MainStage() {
             databases: databases,
         }
         const resp = await roomService.saveRoom(room_id, data);
+        if (resp.data.ok) {
+            Swal.fire({
+                title: 'Registro Satisfactorio!',
+                text: 'Formas Guardadas Correctamente',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            })
+        } else {
+            Swal.fire({
+                title: 'Error!',
+                text: 'No se pudo Registrar las Formas',
+                icon: 'error',
+                confirmButtonText: 'Cool'
+            })
+        }
+        console.log(resp.data.ok)
     }
 
     function handleExportImg() {
         alert("export")
     }
 
-    function handleBack() {
-        alert("back")
+    async function handleBack() {
+        Swal.fire({
+            title: '¿Estas Seguro?',
+            text: "Estas Intentando Salir de la Sala",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Si',
+            cancelButtonText: 'No'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                if (auth.id !== room.anfitrion_id) {
+                    Navigate('/room')
+                } else {
+                    Navigate('/myRoom')
+                }
+            }
+        })
 
     }
+
+    /* function handleStageClick() {
+        var pos = layerRef2.current.parent.getPointerPosition();
+        var shape = layerRef2.current.getIntersection(pos);
+        if (shape !== null && shape.name() !== undefined && shape !== undefined && shape.name() !== undefined) {
+            scenarioStageRef.current.draw();
+        }
+
+        if (newArrowRef.attrs.name !== "" && newArrowRef !== undefined) {
+            if (previousShape) {
+                if (previousShape.attrs.id !== "ContainerRect") {
+                    arrows.map(eachArrow => {
+                        if (eachArrow.name === newArrowRef.attrs.name) {
+                            eachArrow.to = previousShape;
+                        }
+                    });
+                }
+            }
+
+            arrows.map(eachArrow => {
+                if (eachArrow.name === newArrowRef.attrs.name) {
+                    eachArrow.fill = "black";
+                    eachArrow.stroke = "black";
+                }
+            });
+            setArrowDraggable(false)
+            setNewArrowRef(undefined)
+        }
+    }; */
 
     return (
         <>
             <Stage
-                width={window.innerWidth * 0.95}
-                height={window.innerHeight * 0.85}
+                /* onClick={handleStageClick} */
+                width={window.innerWidth}
+                height={window.innerHeight}
                 ref={scenarioStageRef}
             >
                 <Layer
-                    width={window.innerWidth * 0.95}
-                    height={window.innerHeight * 0.85}
-                    ref={layerRef1}
-                >
-                    <ToolBar
-                        personName={
-                            persons.length + 1 + personDeleteCount
-                        }
-                        appendToPerson={stuff => {
-                            var toPush = stuff;
-                            setPersons([...persons, toPush])
-                            setSelectedShapeName(toPush.name)
-                        }}
-                        systemName={
-                            systems.length + 1 + systemDeleteCount
-                        }
-                        appendToSystem={stuff => {
-                            var toPush = stuff;
-                            setSystems([...systems, toPush])
-                            setSelectedShapeName(toPush.name)
-                        }}
-                        containerName={
-                            containers.length + 1 + containerDeleteCount
-                        }
-                        appendToContainer={stuff => {
-                            var toPush = stuff;
-                            setContainers([...containers, toPush])
-                            setSelectedShapeName(toPush.name)
-                        }}
-                        databaseName={
-                            databases.length + 1 + databaseDeleteCount
-                        }
-                        appendToDataBase={stuff => {
-                            var toPush = stuff;
-                            setDatabases([...databases, toPush])
-                            setSelectedShapeName(toPush.name)
-                        }}
-                    />
-                </Layer>
-                <Layer
-                    width={window.innerWidth * 0.95}
-                    height={window.innerHeight * 0.85}
+                    width={window.innerWidth}
+                    height={window.innerHeight}
                     ref={layerRef2}
+                    draggable
+
                 >
-                    {persons.map((person, index) => (
+                    <Rect
+                        x={-5 * window.innerWidth}
+                        y={-5 * window.innerHeight}
+                        height={window.innerHeight * 10}
+                        width={window.innerWidth * 10}
+                        name=""
+                        id="ContainerRect"
+                    />
+                    {persons.map((person) => (
                         <Person
                             x={person.x}
                             y={person.y}
@@ -177,7 +225,7 @@ export default function MainStage() {
                             actualizarContainer={stuff => {
                                 setContainers(containers.map(
                                     container => container.name === stuff.name ? {
-                                        ...system,
+                                        ...container,
                                         x: stuff.x,
                                         y: stuff.y,
                                     } : container
@@ -203,7 +251,7 @@ export default function MainStage() {
                             actualizarDataBase={stuff => {
                                 setDatabases(databases.map(
                                     database => database.name === stuff.name ? {
-                                        ...system,
+                                        ...database,
                                         x: stuff.x,
                                         y: stuff.y,
                                     } : database
@@ -212,14 +260,207 @@ export default function MainStage() {
                             }}
                         />
                     ))}
+                    {/*  {arrows.map(eachArrow => {
+                        if (!eachArrow.from && !eachArrow.to) {
+                            return (
+                                <Arrow
+                                    ref={eachArrow.ref}
+                                    key={eachArrow.ref}
+                                    name={eachArrow.name}
+                                    points={[
+                                        eachArrow.points[0],
+                                        eachArrow.points[1],
+                                        eachArrow.points[2],
+                                        eachArrow.points[3]
+                                    ]}
+                                    stroke={eachArrow.stroke}
+                                    fill={eachArrow.fill}
+                                    draggable
+                                    onDragEnd={event => {
+                                        //set new points to current position
+
+                                        //usually: state => star => x & y
+                                        //now: state => arrow => attr => x & y
+
+                                        let oldPoints = [
+                                            eachArrow.points[0],
+                                            eachArrow.points[1],
+                                            eachArrow.points[2],
+                                            eachArrow.points[3]
+                                        ];
+
+                                        let shiftX = this.refs[eachArrow.ref].attrs.x;
+                                        let shiftY = this.refs[eachArrow.ref].attrs.y;
+
+                                        let newPoints = [
+                                            oldPoints[0] + shiftX,
+                                            oldPoints[1] + shiftY,
+                                            oldPoints[2] + shiftX,
+                                            oldPoints[3] + shiftY
+                                        ];
+
+                                        this.refs[eachArrow.ref].position({ x: 0, y: 0 });
+                                        this.refs.layer2.draw();
+
+                                        this.setState(prevState => ({
+                                            arrows: prevState.arrows.map(eachArr =>
+                                                eachArr.name === eachArrow.name
+                                                    ? {
+                                                        ...eachArr,
+                                                        points: newPoints
+                                                    }
+                                                    : eachArr
+                                            )
+                                        }));
+                                    }}
+                                />
+                            );
+                        } else if (newArrowRef !== undefined) {
+                            if (eachArrow.name === newArrowRef.attrs.name && (eachArrow.from || eachArrow.to)) {
+                                return (
+                                    <Connector
+                                        name={eachArrow.name}
+                                        key={eachArrow.name}
+                                        from={eachArrow.from}
+                                        to={eachArrow.to}
+                                        arrowEndX={arrowEndX}
+                                        arrowEndY={arrowEndY}
+                                        current={true}
+                                        stroke={eachArrow.stroke}
+                                        fill={eachArrow.fill}
+                                    />
+                                );
+                            }
+                        } else if (eachArrow.from || eachArrow.to) {
+                            return (
+                                <Connector
+                                    name={eachArrow.name}
+                                    key={eachArrow.name}
+                                    from={eachArrow.from}
+                                    to={eachArrow.to}
+                                    points={eachArrow.points}
+                                    current={false}
+                                    stroke={eachArrow.stroke}
+                                    fill={eachArrow.fill}
+                                />
+                            );
+                        }
+                    })} */}
                 </Layer>
+                <Layer
+                    width={window.innerWidth * 0.95}
+                    height={window.innerHeight * 0.85}
+                    ref={layerRef1}
+                >
+                    <ToolBar
+                        previousShape={previousShape}
+                        setPreviousShape={setPreviousShape}
+                        layer={layerRef2.current}
+                        personName={
+                            persons.length + 1 + personDeleteCount
+                        }
+                        appendToPerson={stuff => {
+                            var toPush = stuff;
+                            setPersons([...persons, toPush])
+                            /*    setSelectedShapeName(toPush.name) */
+                        }}
+                        systemName={
+                            systems.length + 1 + systemDeleteCount
+                        }
+                        appendToSystem={stuff => {
+                            var toPush = stuff;
+                            setSystems([...systems, toPush])
+                            /*  setSelectedShapeName(toPush.name) */
+                        }}
+                        containerName={
+                            containers.length + 1 + containerDeleteCount
+                        }
+                        appendToContainer={stuff => {
+                            var toPush = stuff;
+                            setContainers([...containers, toPush])
+                            /*  setSelectedShapeName(toPush.name) */
+                        }}
+                        databaseName={
+                            databases.length + 1 + databaseDeleteCount
+                        }
+                        appendToDataBase={stuff => {
+                            var toPush = stuff;
+                            setDatabases([...databases, toPush])
+                            /*  setSelectedShapeName(toPush.name) */
+                        }}
+                    /*  newArrowOnDragEnd={toPush => {
+                         if (toPush.from !== undefined) {
+                             var transform = layerRef2.current
+                                 .getAbsoluteTransform()
+                                 .copy();
+                             transform.invert();
+                             let uh = transform.point({
+                                 x: toPush.x,
+                                 y: toPush.y
+                             });
+                             toPush.x = uh.x;
+                             toPush.y = uh.y;
+
+                             var newArrow = {
+                                 points: toPush.points,
+                                 ref:
+                                     toPush.ref,
+                                 name:
+                                     "arrow" +
+                                     (arrows.length +
+                                         1 +
+                                         arrowDeleteCount),
+                                 from: toPush.from,
+                                 stroke: toPush.stroke,
+                                 strokeWidth: toPush.strokeWidth,
+                                 fill: toPush.fill
+                             };
+                             setArrows([...arrows, newArrow])
+                             setNewArrowDropped(true)
+                             setNewArrowRef(newArrow.ref)
+                             setArrowEndX(toPush.x)
+                             setArrowEndY(toPush.y)
+                         } else {
+                             var transform = layerRef2.current
+                                 .getAbsoluteTransform()
+                                 .copy();
+                             transform.invert();
+                             let uh = transform.point({
+                                 x: toPush.x,
+                                 y: toPush.y
+                             });
+                             toPush.x = uh.x;
+                             toPush.y = uh.y;
+                             var newArrow = {
+                                 points: [toPush.x, toPush.y, toPush.x, toPush.y],
+                                 ref:
+                                     toPush.ref,
+                                 name:
+                                     "arrow" +
+                                     (arrows.length +
+                                         1 +
+                                         arrowDeleteCount),
+                                 from: toPush.from,
+                                 stroke: toPush.stroke,
+                                 strokeWidth: toPush.strokeWidth,
+                                 fill: toPush.fill
+                             };
+
+                             setArrows([...arrows, newArrow])
+                             setNewArrowDropped(true)
+                             setNewArrowRef(newArrow.ref)
+                             setArrowEndX(toPush.x)
+                             setArrowEndY(toPush.y)
+                         }
+                     }} */
+                    />
+
+                </Layer>
+
             </Stage>
             <div className="flex bottom-1 right-1 absolute">
                 <div>
-                    <button onClick={handleSave} type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Guardar</button>
-                </div>
-                <div>
-                    <button onClick={handleExportImg} type="button" className="text-white bg-yellow-700 hover:bg-yellow-800 focus:ring-4 focus:ring-yellow-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-yellow-600 dark:hover:bg-yellow-700 focus:outline-none dark:focus:ring-yellow-800">Exportar a Imagen</button>
+                    {auth.id === room.anfitrion_id && <button onClick={handleSave} type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Guardar</button>}
                 </div>
                 <div>
                     <button onClick={handleBack} type="button" className="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-red-800">Salir</button>
